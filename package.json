@@ -1,0 +1,26 @@
+{
+  "name": "bamazon",
+  "version": "1.0.0",
+  "description": "week 12 homework",
+  "main": "index.js",
+  "scripts": {
+    "test": "test command"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/stevearchuleta/bamazon.git"
+  },
+  "keywords": [
+    "bamazon"
+  ],
+  "author": "steve archuleta",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/stevearchuleta/bamazon/issues"
+  },
+  "homepage": "https://github.com/stevearchuleta/bamazon#readme",
+  "dependencies": {
+    "inquirer": "^6.2.2",
+    "mysql": "^2.16.0"
+  }
+}
