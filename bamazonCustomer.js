@@ -1,7 +1,8 @@
+// NPM PACKAGES
 var mysql = require('mysql');
 var inquirer = require('inquirer');
 require('console.table');
-
+// CONNECTION TO SQL SERVER
 var connection = mysql.createConnection({
   host: 'localhost',
   port: 3306,
@@ -9,7 +10,9 @@ var connection = mysql.createConnection({
   password: 'Gaels4572',
   database: 'bamazon'
 });
-
+// COUNTER
+var numberOfProductTypes = 0;
+// CONNECT TO DATABASE
 connection.connect(function(error){
   if(error){
     console.log("error connecting: ", error.stack);
@@ -59,15 +62,15 @@ function promptCustomerForQuantity(product){
   inquirer
   .prompt([
     {
-      type: IDBOpenDBRequest,
+      type: 'input',
       name: 'quantity',
-      message: 'How many do you want to purchase? Click Q to quit.',
+      message: 'How many do you want to purchase? Click Z to quit.',
       validate: function(val){
-        return val > 0 || val.toLowerCase() === 'q';
+        return val > 0 || val.toLowerCase() === 'z';
       }
     }
   ])
-  .then(function(val)){
+  .then(function(val){
     checkIfShouldExit(val.quantity);
     if(quantity < product.stock_quantity){
       console.log ('Insufficient Quantity to fill order!');
@@ -76,11 +79,30 @@ function promptCustomerForQuantity(product){
     else{
       makePurchase(product, quantity);
     }
-  }
+  })
 }
 
-
 function makePurchase (product, quantity){
-  connection.query[
-    'UPDATE products SET stock_quantity = stock_quanitity - ?
+  connection.query(
+    'UPDATE products SET stock_quantity = stock_quanitity - ?, product-sale',
+    [quantity, product.price * quantity, product.item_id], function (err, res) {
+      console.log('\nsuccessfully purchased!' + quantity + ' ' + product.choice);
+      loadProducts();
+    });
+}
+
+function checkInventory(choiceID, inventory){
+  for (var i = 0; i < inventory.length; i++){
+    if(inventory[i].item_id === choiceID){
+      return inventory[i];
+    }
+  }
+    return null;
+}
+
+function checkIfShouldExit(choice){
+  if(choice.toLowerCase() === Z){
+    console.log ('Exiting Program.');
+    process.exit(0);
+  }
 }
