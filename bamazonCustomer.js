@@ -2,6 +2,7 @@
 var mysql = require('mysql');
 var inquirer = require('inquirer');
 require('console.table');
+
 // CONNECTION TO SQL SERVER
 var connection = mysql.createConnection({
   host: 'localhost',
@@ -10,8 +11,10 @@ var connection = mysql.createConnection({
   password: 'Gaels4572',
   database: 'bamazon'
 });
+
 // COUNTER
 var numberOfProductTypes = 0;
+
 // CONNECT TO DATABASE
 connection.connect(function(error){
   if(error){
@@ -20,6 +23,7 @@ connection.connect(function(error){
   loadProducts();
 })
 
+// LOAD PRODUCTS FUNCTION
 function loadProducts(){
   connection.query('SELECT + FROM products', function(error, response){
     if(error) throw error;
@@ -30,7 +34,7 @@ function loadProducts(){
   });
 }
 
-
+// PROMPT CUSTOMERS
 function promptCustomerForItem (inventory){
   
   inquirer
@@ -64,9 +68,9 @@ function promptCustomerForQuantity(product){
     {
       type: 'input',
       name: 'quantity',
-      message: 'How many do you want to purchase? Click Z to quit.',
+      message: 'How many do you want to purchase? Click Q to quit.',
       validate: function(val){
-        return val > 0 || val.toLowerCase() === 'z';
+        return val > 0 || val.toLowerCase() === 'q';
       }
     }
   ])
@@ -101,7 +105,7 @@ function checkInventory(choiceID, inventory){
 }
 
 function checkIfShouldExit(choice){
-  if(choice.toLowerCase() === Z){
+  if(choice.toLowerCase() === Q){
     console.log ('Exiting Program.');
     process.exit(0);
   }
