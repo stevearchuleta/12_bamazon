@@ -25,11 +25,12 @@ connection.connect(function(error){
 
 // LOAD PRODUCTS FUNCTION
 function loadProducts(){
-  connection.query('SELECT + FROM products', function(error, response){
+  connection.query('SELECT * FROM products', function(error, response){
     if(error) throw error;
+    console.log(response);
+    console.table(response);
     
-    console.log(table(response));
-    
+    // CALL
     promptCustomerForItem(response);
   });
 }
@@ -49,9 +50,10 @@ function promptCustomerForItem (inventory){
     }
   ])
   .then(function(val){
-    checkIfShouldExit(val.choice);
+    // checkIfShouldExit(val.choice);
     var choiceID = parseInt(val.choice);
     var product = checkInventory(choiceID, inventory);
+    console.log('testing!!!!!!!!!!', product);
     if(product){
       promptCustomerForQuantity(product);
     }
@@ -76,28 +78,34 @@ function promptCustomerForQuantity(product){
   ])
   .then(function(val){
     checkIfShouldExit(val.quantity);
-    if(quantity < product.stock_quantity){
-      console.log ('Insufficient Quantity to fill order!');
+    if(val.quantity > product.stock_quantity){
+      console.log ('Insufficient Quantity To Fill Order; Product Not In Stock.');
       loadProducts();
     }
     else{
-      makePurchase(product, quantity);
+      makePurchase(product, val.quantity);
     }
   })
 }
 
+// UPDATE products SET stock_quantity = 200 WHERE id = 18
 function makePurchase (product, quantity){
+  // product.stock_quantity - quantity
+  // produce.id
   connection.query(
-    'UPDATE products SET stock_quantity = stock_quanitity - ?, product-sale',
-    [quantity, product.price * quantity, product.item_id], function (err, res) {
-      console.log('\nsuccessfully purchased!' + quantity + ' ' + product.choice);
+    'UPDATE products SET ? WHERE ?',
+    [{stock_quantity: product.stock_quantity - quantity}, {id: product.id}], function (err, res) {
+      if(err){
+        console.log(err)
+      }
+      console.log('\nSuccessfully Purchased!');
       loadProducts();
     });
 }
 
 function checkInventory(choiceID, inventory){
   for (var i = 0; i < inventory.length; i++){
-    if(inventory[i].item_id === choiceID){
+    if(inventory[i].id === choiceID){
       return inventory[i];
     }
   }
@@ -105,7 +113,7 @@ function checkInventory(choiceID, inventory){
 }
 
 function checkIfShouldExit(choice){
-  if(choice.toLowerCase() === Q){
+  if(choice.toLowerCase() === "q"){
     console.log ('Exiting Program.');
     process.exit(0);
   }
